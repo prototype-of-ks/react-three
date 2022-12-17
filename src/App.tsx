@@ -1,24 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useRef, useState } from 'react';
+import {
+  Canvas,
+  MeshStandardMaterialProps,
+  useFrame,
+} from '@react-three/fiber';
+import ThreeComponent from './component/three';
 import './App.css';
+
+const Box: React.FC = () => {
+  const ref = useRef<MeshStandardMaterialProps>();
+  const [isHoverd, setIsHoverd] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+  useFrame(() => {
+    if (ref.current) {
+      return (ref.current.rotation.x += 0.01);
+    }
+  });
+  return (
+    <mesh
+      ref={ref}
+      userData={{ hello: 'world' }}
+      scale={isClicked ? 1.5 : 1}
+      onClick={() => setIsClicked(!isClicked)}
+      onPointerOver={() => setIsHoverd(true)}
+      onPointerOut={() => setIsHoverd(false)}
+    >
+      <boxGeometry args={[3, 3, 3]} />
+      <meshStandardMaterial color={isHoverd ? 'blue' : 'orange'} />
+    </mesh>
+  );
+};
+
+const Light: React.FC = () => {
+  return (
+    <>
+      <ambientLight intensity={0.1} />
+      <directionalLight color="red" position={[0, 0, 5]} />
+    </>
+  );
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div id="canvas-container">
+      {/* <Canvas>
+        <Light />
+        <Box />
+      </Canvas> */}
+
+      <ThreeComponent />
     </div>
   );
 }
